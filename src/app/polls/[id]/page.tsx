@@ -4,22 +4,26 @@ import { useEffect, useState, useRef, useCallback, use } from "react";
 import getPoll from "@/actions/getPoll";
 import PollCard from "@/components/poll-card";
 import { MY_PORTFOLIO_LINK } from "@/lib/constants";
-import { Loader2 } from "lucide-react";
+import { Loader, Loader2 } from "lucide-react";
 import { notFound } from "next/navigation";
 
 const ViewPollPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id: pollId } = use(params);
   const [pollData, setPollData] =
     useState<Awaited<ReturnType<typeof getPoll>>>();
+  const [isFetching, setIsFetching] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout>(null);
 
   const fetchPoll = useCallback(async () => {
     try {
+      setIsFetching(true);
       const data = await getPoll(pollId);
       if (!data) notFound();
       setPollData(data);
     } catch (error) {
       console.error("Error fetching poll: ", error);
+    } finally {
+      setIsFetching(false);
     }
   }, [pollId]);
 
@@ -53,6 +57,13 @@ const ViewPollPage = ({ params }: { params: Promise<{ id: string }> }) => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)] w-full">
+      {isFetching ? (
+        <Loader
+          size={24}
+          className="text-neutral-600 animate-spin fixed top-2 right-2"
+        />
+      ) : null}
+
       <main className="flex flex-col items-center justify-center gap-8 w-full container mx-auto max-w-3xl">
         <h1 className="text-2xl md:text-4xl font-bold text-center dark:text-white">
           Chaitanya&apos;s Cactro Polls!
