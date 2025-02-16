@@ -8,9 +8,10 @@ import { toast } from "sonner";
 
 interface PollCardProps {
   poll: Awaited<ReturnType<typeof getPoll>>;
+  refreshPollData: () => void;
 }
 
-const PollCard: React.FC<PollCardProps> = ({ poll }) => {
+const PollCard: React.FC<PollCardProps> = ({ poll, refreshPollData }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const onVotePollOptionHandler = async (optionId: string) => {
@@ -24,6 +25,7 @@ const PollCard: React.FC<PollCardProps> = ({ poll }) => {
       toast.error("Error voting on poll!");
     } finally {
       setIsLoading(false);
+      refreshPollData();
     }
   };
 
