@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Chaitanya's Cactro Polls Fullstack App
 
-## Getting Started
+## Description
 
-First, run the development server:
+This is a fullstack web application that allows users to create, vote, and view polls. We are using Next.js App Router for both the frontend and backend. The database is a PostgreSQL database. The frontend is styled using Tailwind CSS.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## API Endpoints
+
+### Create Poll
+
+- **Endpoint**: `POST /api/polls/create`
+- **Description**: Creates a new poll with a question and multiple options
+- **Request Body**:
+
+```typescript
+{
+  question: string;
+  options: string[];  // Array of option texts
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Response**:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```typescript
+{
+  poll: {
+    id: string;
+    question: string;
+    options: Array<{
+      id: string;
+      text: string;
+      votes: number;
+    }>;
+  }
+}
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Get Poll Results
 
-## Learn More
+- **Endpoint**: `GET /api/polls/{id}`
+- **Description**: Retrieves a poll and its current voting results including percentages
+- **Parameters**: `id` - The unique identifier of the poll
+- **Response**:
 
-To learn more about Next.js, take a look at the following resources:
+```typescript
+{
+  id: string;
+  question: string;
+  totalVotes: number;
+  options: Array<{
+    id: string;
+    text: string;
+    votes: number;
+    percentage: number; // Percentage of total votes
+  }>;
+}
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Vote on a Poll
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Endpoint**: `POST /api/polls/{id}/vote`
+- **Description**: Records a vote for a specific option in a poll
+- **Parameters**: `id` - The unique identifier of the poll
+- **Request Body**:
 
-## Deploy on Vercel
+```typescript
+{
+  optionId: string; // ID of the option being voted for
+}
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Response**:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```typescript
+{
+  id: string;
+  text: string;
+  votes: number;
+}
+```
+
+### Error Responses
+
+All endpoints may return the following errors:
+
+- `400 Bad Request`: Invalid input data
+- `404 Not Found`: Poll not found
+- `500 Internal Server Error`: Server-side error
