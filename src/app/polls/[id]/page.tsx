@@ -3,9 +3,10 @@
 import { useEffect, useState, useRef, useCallback, use } from "react";
 import getPoll from "@/actions/getPoll";
 import PollCard from "@/components/poll-card";
-import { MY_PORTFOLIO_LINK } from "@/lib/constants";
-import { Loader, Loader2 } from "lucide-react";
+import { MY_PORTFOLIO_LINK, REFETCH_INTERVAL, Route } from "@/lib/constants";
+import { Home, Loader, Loader2 } from "lucide-react";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 
 const ViewPollPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id: pollId } = use(params);
@@ -31,8 +32,8 @@ const ViewPollPage = ({ params }: { params: Promise<{ id: string }> }) => {
     // Initial fetch
     fetchPoll();
 
-    // Set up polling interval to fetch poll data every 5 seconds
-    intervalRef.current = setInterval(fetchPoll, 5000);
+    // Set up polling interval to fetch poll data every REFETCH_INTERVAL ms
+    intervalRef.current = setInterval(fetchPoll, REFETCH_INTERVAL);
 
     // Cleanup interval on unmount
     return () => {
@@ -65,9 +66,18 @@ const ViewPollPage = ({ params }: { params: Promise<{ id: string }> }) => {
       ) : null}
 
       <main className="flex flex-col items-center justify-center gap-8 w-full container mx-auto max-w-3xl">
-        <h1 className="text-2xl md:text-4xl font-bold text-center dark:text-white">
-          Chaitanya&apos;s Cactro Polls!
-        </h1>
+        <div className="flex items-center gap-4">
+          <Link
+            href={Route.Index}
+            className="hover:bg-gray-100 p-2 rounded-md transition-all"
+          >
+            <Home size={24} />
+          </Link>
+
+          <h1 className="text-2xl md:text-4xl font-bold text-center dark:text-white">
+            Chaitanya&apos;s Cactro Polls!
+          </h1>
+        </div>
 
         {!pollData ? (
           <Loader2 size={48} className="text-blue-500 animate-spin" />
