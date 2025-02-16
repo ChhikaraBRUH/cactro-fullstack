@@ -1,6 +1,8 @@
 "use server";
 
+import { Route } from "@/lib/constants";
 import prisma from "@/lib/prisma";
+import { redirect } from "next/navigation";
 
 const getPoll = async (pollId: string) => {
   "server only";
@@ -15,7 +17,7 @@ const getPoll = async (pollId: string) => {
   });
 
   if (!poll) {
-    throw new Error("Poll not found!");
+    return redirect(Route.NotFound);
   }
 
   // Calculate the total votes and the percentage for each option

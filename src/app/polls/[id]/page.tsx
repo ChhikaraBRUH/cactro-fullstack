@@ -1,15 +1,37 @@
+"use client";
+
+import { use, useEffect, useState } from "react";
 import getPoll from "@/actions/getPoll";
 import PollCard from "@/components/poll-card";
 import { MY_PORTFOLIO_LINK } from "@/lib/constants";
+import { Loader2 } from "lucide-react";
+import { notFound } from "next/navigation";
 
-const ViewPollPage = async ({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) => {
-  const id = (await params).id;
+const ViewPollPage = ({ params }: { params: Promise<{ id: string }> }) => {
+  const { id: pollId } = use(params);
+  const [pollData, setPollData] =
+    useState<Awaited<ReturnType<typeof getPoll>>>();
 
-  const pollData = await getPoll(id);
+  useEffect(() => {
+    const fetchPoll = async () => {
+      try {
+        const data = await getPoll(pollId);
+        if (!data) notFound();
+        setPollData(data);
+      } catch (error) {
+        console.error("Error fetching poll: ", error);
+      }
+    };
+
+    // Initial fetch
+    fetchPoll();
+
+    // Set up polling interval to fetch poll data every 5 seconds
+    const interval = setInterval(fetchPoll, 5000);
+
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
+  }, [pollId]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)] w-full">
@@ -18,7 +40,11 @@ const ViewPollPage = async ({
           Chaitanya&apos;s Cactro Polls!
         </h1>
 
-        <PollCard poll={pollData} />
+        {!pollData ? (
+          <Loader2 size={48} className="text-blue-500 animate-spin" />
+        ) : (
+          <PollCard poll={pollData} />
+        )}
       </main>
 
       <footer className="text-center">
