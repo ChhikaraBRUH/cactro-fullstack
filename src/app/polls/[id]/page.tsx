@@ -66,6 +66,9 @@ const ViewPollPage = ({ params }: { params: Promise<{ id: string }> }) => {
             return {
               ...option,
               votes: option.votes + 1,
+              percentage: Math.round(
+                ((option.votes + 1) / (prevData.totalVotes + 1)) * 100
+              ),
             };
           }
 
