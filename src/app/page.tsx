@@ -1,8 +1,7 @@
-import { Button } from "@/components/ui/button";
+import CreatePollDialog from "@/components/create-poll-dialog";
 import { MY_PORTFOLIO_LINK } from "@/lib/constants";
-import { ArrowRight } from "lucide-react";
 
-export default function Home() {
+const Home = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col items-center justify-center gap-8">
@@ -10,10 +9,7 @@ export default function Home() {
           Welcome to Chaitanya&apos;s Cactro Polls!
         </h1>
 
-        <Button className="w-full md:w-max md:px-10 group">
-          Create a Poll
-          <ArrowRight className="group-hover:translate-x-1 transition-all" />
-        </Button>
+        <CreatePollDialog />
       </main>
 
       <footer className="text-center">
@@ -33,4 +29,6 @@ export default function Home() {
       </footer>
     </div>
   );
-}
+};
+
+export default Home;
