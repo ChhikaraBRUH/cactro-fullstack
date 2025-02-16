@@ -62,17 +62,16 @@ const ViewPollPage = ({ params }: { params: Promise<{ id: string }> }) => {
         if (!prevData) return prevData;
 
         const updatedOptions = prevData.options.map((option) => {
-          if (option.id === optionId) {
-            return {
-              ...option,
-              votes: option.votes + 1,
-              percentage: Math.round(
-                ((option.votes + 1) / (prevData.totalVotes + 1)) * 100
-              ),
-            };
-          }
-
-          return option;
+          return {
+            ...option,
+            votes: option.id === optionId ? option.votes + 1 : option.votes,
+            percentage:
+              option.id === optionId
+                ? Math.round(
+                    ((option.votes + 1) / (prevData.totalVotes + 1)) * 100
+                  )
+                : Math.round((option.votes / (prevData.totalVotes + 1)) * 100),
+          };
         });
 
         return {
