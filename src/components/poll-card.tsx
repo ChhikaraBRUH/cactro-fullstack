@@ -9,15 +9,21 @@ import { toast } from "sonner";
 interface PollCardProps {
   poll: Awaited<ReturnType<typeof getPoll>>;
   refreshPollData: () => void;
+  optimisticUpdateOption: (optionId: string) => void;
 }
 
-const PollCard: React.FC<PollCardProps> = ({ poll, refreshPollData }) => {
+const PollCard: React.FC<PollCardProps> = ({
+  poll,
+  refreshPollData,
+  optimisticUpdateOption,
+}) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const onVotePollOptionHandler = async (optionId: string) => {
     setIsLoading(true);
 
     try {
+      optimisticUpdateOption(optionId);
       await votePollOption(optionId);
       toast.success("Voted successfully!");
     } catch (error) {

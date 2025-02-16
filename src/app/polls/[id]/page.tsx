@@ -56,6 +56,31 @@ const ViewPollPage = ({ params }: { params: Promise<{ id: string }> }) => {
     intervalRef.current = setInterval(fetchPoll, 5000);
   };
 
+  const optimisticUpdateOption = useCallback(
+    (optionId: string) => {
+      setPollData((prevData) => {
+        if (!prevData) return prevData;
+
+        const updatedOptions = prevData.options.map((option) => {
+          if (option.id === optionId) {
+            return {
+              ...option,
+              votes: option.votes + 1,
+            };
+          }
+
+          return option;
+        });
+
+        return {
+          ...prevData,
+          options: updatedOptions,
+        };
+      });
+    },
+    [setPollData]
+  );
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)] w-full">
       {isFetching ? (
@@ -82,7 +107,11 @@ const ViewPollPage = ({ params }: { params: Promise<{ id: string }> }) => {
         {!pollData ? (
           <Loader2 size={48} className="text-blue-500 animate-spin" />
         ) : (
-          <PollCard poll={pollData} refreshPollData={refreshPollData} />
+          <PollCard
+            poll={pollData}
+            refreshPollData={refreshPollData}
+            optimisticUpdateOption={optimisticUpdateOption}
+          />
         )}
       </main>
 
