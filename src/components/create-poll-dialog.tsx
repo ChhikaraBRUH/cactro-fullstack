@@ -19,15 +19,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { cn, createPollRequest } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { useFieldArray } from "react-hook-form";
 import { CreatePollSchema } from "@/lib/validation";
 import { toast } from "sonner";
 import { useState } from "react";
 import { ArrowRight, Loader2, X } from "lucide-react";
 import useZodForm from "@/hooks/use-zod-form";
-import useSWRMutation from "swr/mutation";
 import { useRouter } from "next/navigation";
+import createPoll from "@/actions/createPoll";
 
 interface CreatePollDialogProps {
   className?: string;
@@ -36,6 +36,7 @@ interface CreatePollDialogProps {
 const CreatePollDialog: React.FC<CreatePollDialogProps> = ({ className }) => {
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useZodForm({
     schema: CreatePollSchema,
@@ -64,24 +65,24 @@ const CreatePollDialog: React.FC<CreatePollDialogProps> = ({ className }) => {
   };
 
   const onSubmit = form.handleSubmit(async () => {
-    try {
-      const res = await trigger();
+    setIsLoading(true);
 
-      if (res.poll.id) {
+    try {
+      const poll = await createPoll(form.getValues());
+
+      if (poll.id) {
         toast.success("Poll created successfully");
         onOpenChange(false);
 
-        router.push(`/polls/${res.poll.id}`);
+        router.push(`/polls/${poll.id}`);
       }
     } catch (error) {
       console.error(error);
       toast.error("Failed to create poll");
+    } finally {
+      setIsLoading(false);
     }
   });
-
-  const { isMutating, trigger } = useSWRMutation("/api/polls/create", () =>
-    createPollRequest(form.getValues())
-  );
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={onOpenChange}>
@@ -158,7 +159,7 @@ const CreatePollDialog: React.FC<CreatePollDialogProps> = ({ className }) => {
                       size="icon"
                       className="h-10 w-10"
                       onClick={() => remove(index)}
-                      disabled={fields.length <= 2 || isMutating}
+                      disabled={fields.length <= 2 || isLoading}
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -172,7 +173,7 @@ const CreatePollDialog: React.FC<CreatePollDialogProps> = ({ className }) => {
                     onClick={() => append("")}
                     disabled={
                       form.watch("options")?.[fields.length - 1] === "" ||
-                      isMutating
+                      isLoading
                     }
                   >
                     Add Option
@@ -186,13 +187,13 @@ const CreatePollDialog: React.FC<CreatePollDialogProps> = ({ className }) => {
                 type="button"
                 variant="secondary"
                 onClick={() => onOpenChange(false)}
-                disabled={isMutating}
+                disabled={isLoading}
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isMutating} className="group">
+              <Button type="submit" disabled={isLoading} className="group">
                 Create
-                {isMutating ? (
+                {isLoading ? (
                   <Loader2 className="animate-spin" />
                 ) : (
                   <ArrowRight className="group-hover:translate-x-1 transition-all" />

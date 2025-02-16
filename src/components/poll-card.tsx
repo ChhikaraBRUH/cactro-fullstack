@@ -1,13 +1,32 @@
 "use client";
 
 import getPoll from "@/actions/getPoll";
+import votePollOption from "@/actions/votePollOption";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface PollCardProps {
   poll: Awaited<ReturnType<typeof getPoll>>;
 }
 
 const PollCard: React.FC<PollCardProps> = ({ poll }) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const onVotePollOptionHandler = async (optionId: string) => {
+    setIsLoading(true);
+
+    try {
+      await votePollOption(optionId);
+      toast.success("Voted successfully!");
+    } catch (error) {
+      console.error("Error voting on poll: ", error);
+      toast.error("Error voting on poll!");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center justify-center gap-6 p-6 bg-white border border-neutral-200 rounded-xl shadow w-full">
       <h2 className="text-2xl font-semibold text-neutral-800 text-center">
@@ -27,6 +46,8 @@ const PollCard: React.FC<PollCardProps> = ({ poll }) => {
                 type="button"
                 variant="outline"
                 className="w-max shrink-0"
+                disabled={isLoading}
+                onClick={() => onVotePollOptionHandler(option.id)}
               >
                 Vote
               </Button>

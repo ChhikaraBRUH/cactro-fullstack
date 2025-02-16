@@ -1,10 +1,13 @@
+"use server";
+
 import prisma from "@/lib/prisma";
-import { NextResponse } from "next/server";
 import { CreatePollSchema } from "@/lib/validation";
 
-export async function POST(req: Request) {
-  const reqJson = await req.json();
-  const { question, options } = CreatePollSchema.parse(reqJson);
+const createPoll = async (data: { question: string; options: string[] }) => {
+  "server only";
+
+  const parsedData = CreatePollSchema.parse(data);
+  const { question, options } = parsedData;
 
   const poll = await prisma.poll.create({
     data: {
@@ -17,5 +20,7 @@ export async function POST(req: Request) {
     },
   });
 
-  return NextResponse.json({ poll }, { status: 201 });
-}
+  return poll;
+};
+
+export default createPoll;

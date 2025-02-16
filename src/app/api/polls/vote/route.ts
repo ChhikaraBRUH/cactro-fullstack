@@ -6,13 +6,8 @@ const VoteSchema = z.object({
   optionId: z.string(),
 });
 
-export async function POST(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: Request) {
   try {
-    const id = (await params).id;
-
     const body = await request.json();
     const { optionId } = VoteSchema.parse(body);
 
@@ -20,7 +15,6 @@ export async function POST(
     const option = await prisma.option.findUnique({
       where: {
         id: optionId,
-        pollId: id,
       },
     });
 
