@@ -19,7 +19,7 @@ This is a fullstack web application that allows users to create, vote, and view 
 }
 ```
 
-- **Response**:
+- **Response** (201):
 
 ```typescript
 {
@@ -51,16 +51,15 @@ This is a fullstack web application that allows users to create, vote, and view 
     id: string;
     text: string;
     votes: number;
-    percentage: number; // Percentage of total votes
+    percentage: number; // Percentage of total votes (rounded to nearest integer)
   }>;
 }
 ```
 
 ### Vote on a Poll
 
-- **Endpoint**: `POST /api/polls/{id}/vote`
+- **Endpoint**: `POST /api/polls/vote`
 - **Description**: Records a vote for a specific option in a poll
-- **Parameters**: `id` - The unique identifier of the poll
 - **Request Body**:
 
 ```typescript
@@ -83,6 +82,12 @@ This is a fullstack web application that allows users to create, vote, and view 
 
 All endpoints may return the following errors:
 
-- `400 Bad Request`: Invalid input data
+- `400 Bad Request`: Invalid request data or invalid option
 - `404 Not Found`: Poll not found
 - `500 Internal Server Error`: Server-side error
+
+Example error response format:
+```typescript
+{
+  error: string; // Error message describing what went wrong
+}
