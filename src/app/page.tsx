@@ -1,4 +1,6 @@
+import { Button } from "@/components/ui/button";
 import { MY_PORTFOLIO_LINK } from "@/lib/constants";
+import { ArrowRight } from "lucide-react";
 
 export default function Home() {
   return (
@@ -7,6 +9,11 @@ export default function Home() {
         <h1 className="text-2xl md:text-4xl font-bold text-center dark:text-white">
           Welcome to Chaitanya&apos;s Cactro Polls!
         </h1>
+
+        <Button className="w-full md:w-max md:px-10 group">
+          Create a Poll
+          <ArrowRight className="group-hover:translate-x-1 transition-all" />
+        </Button>
       </main>
 
       <footer className="text-center">
